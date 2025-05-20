@@ -94,5 +94,3 @@ Required environment variables:
 - **Distributed Caching**: Redis implementation for improved read performance
 - **Rate Limiting**: Using @nestjs/throttler to prevent API abuse
 - **Enhanced Analytics**: More detailed statistics for URL visits
-- **Custom Slugs**: Allow users to define their own short URLs
-- **Authentication**: User accounts for URL management 
