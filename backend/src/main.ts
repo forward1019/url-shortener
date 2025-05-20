@@ -32,14 +32,20 @@ async function bootstrap() {
     }),
   );
 
-  // Enable CORS
+  // Enable CORS with broader configuration
   app.enableCors({
     origin: [
       'http://localhost:3000',  // Frontend development
       appDomain, // Production frontend
+      'https://url-shortener-frontend-qfg9uawoi-milos-projects-0ac03486.vercel.app', // Specific frontend URL
+      /\.vercel\.app$/, // Allow all vercel.app subdomains
+      '*', // Allow all origins as fallback
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Content-Disposition'],
+    maxAge: 86400, // 24 hours in seconds
   });
 
   // Start server
