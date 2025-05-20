@@ -7,8 +7,8 @@ import { ShortenedUrlDto } from '../dto/shortened-url.dto';
 import { UpdateShortSlugDto } from '../dto/update-url-slug';
 import { PaginationQueryDto } from '../dto/pagination-query.dto';
 import { Link } from '../entities/link.entity';
-import { getAvaliableUniqueSlug } from 'src/common/utils/slug-helper';
-import { paginate, SORT_FIELD_MAP } from 'src/common/pagination/paginate.helper';
+import { getAvaliableUniqueSlug } from '../../../common/utils/slug-helper';
+import { paginate, SORT_FIELD_MAP } from '../../../common/pagination/paginate.helper';
 
 @Injectable()
 export class LinkService {
