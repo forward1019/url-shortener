@@ -1,215 +1,98 @@
 # URL Shortener Application
 
-A full-stack URL shortener application that allows users to create short, memorable links for any URL.
-
-## Features
-
-- Create shortened URLs
-- View a list of all shortened URLs
-- Redirect from short URLs to original URLs
-- Track visit counts for each shortened URL
+A full-stack URL shortener application built with Next.js, NestJS, and Supabase, designed with scalability in mind.
 
 ## Technology Stack
 
-### Frontend
+- **Frontend**: TypeScript, Next.js, shadcn UI components with Tailwind CSS
+- **Backend**: TypeScript, NestJS, Node.js
+- **Database**: Supabase (PostgreSQL) with Prisma ORM
+- **Deployment**: Vercel (Frontend and Backend as serverless functions)
 
-- **Language**: TypeScript
-- **Framework**: Next.js (React)
-- **Styling**: shadcn UI components with Tailwind CSS
-- **State Management**: React Hooks
+## Core Features
 
-### Backend
+- Generate shortened URLs from long ones using nanoid for unique slug generation
+- Redirect from short URLs to original destinations
+- List all shortened URLs
+- Track visit counts (implemented/planned)
 
-- **Language**: TypeScript
-- **Runtime**: Node.js
-- **Framework**: NestJS
-- **Database**: PostgreSQL (via Supabase)
-- **ORM**: Prisma
-- **Logging**: Pino (structured JSON logging)
-- **Security**: Helmet, CORS, input validation
+## Architecture & Scalability Considerations
 
-## Project Structure
+1. **Stateless Backend**: NestJS application designed without session state, enabling horizontal scaling across multiple instances.
 
-```
-url-shortener/
-├── frontend/              # Next.js frontend application
-│   ├── src/               
-│   │   ├── app/           # Next.js app router
-│   │   ├── components/    # UI components
-│   │   ├── lib/           # Utility functions
-│   │   └── config/        # Configuration files
-│   ├── public/            # Static assets
-│   └── package.json       # Frontend dependencies
-│
-├── backend/               # NestJS backend application
-│   ├── src/               
-│   │   ├── common/        # Common utilities and modules
-│   │   ├── modules/       # Feature modules
-│   │   ├── app.module.ts  # Root application module
-│   │   └── main.ts        # Application entry point
-│   ├── prisma/            # Prisma schema and migrations
-│   └── package.json       # Backend dependencies
-│
-└── package.json           # Root package.json for running both services
-```
+2. **Database Selection**: Supabase (PostgreSQL) chosen for:
+   - Reliability and ACID compliance
+   - Managed service with automatic scaling
+   - Strong support for complex queries and data integrity
 
-## Database Models
+3. **Slug Generation Strategy**: 
+   - Using nanoid for short, unique identifiers (6-8 alphanumeric characters)
+   - Implemented with collision detection and retry mechanism
+   - Optimized for distributed environments
 
-The database models are defined in the Prisma schema file at `backend/prisma/schema.prisma`. The schema defines the following model:
+4. **Error Handling & Logging**:
+   - Centralized error handling with NestJS exception filters
+   - Structured JSON logging (via Pino) directed to stdout/stderr
+   - Designed for easy diagnosis in distributed environments
 
-```prisma
-model Link {
-  id          Int      @id @default(autoincrement())
-  originalUrl String
-  shortSlug   String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  visitCount  Int      @default(0)
-}
-```
+5. **Caching Strategy**:
+   - In-memory caching for redirection endpoints (implemented/planned)
+   - Discussion of Redis as future enhancement for distributed caching
 
-## Scalability Considerations
+6. **API Design**:
+   - RESTful principles with clear endpoint structure
+   - DTOs with class-validator for input validation
+   - Consistent JSON response format
 
-This application is designed with scalability in mind:
+## API Endpoints
 
-1. **Stateless Backend**: The NestJS backend is completely stateless, allowing for horizontal scaling.
-2. **Database Choice**: Supabase (PostgreSQL) is used as a reliable, scalable data store.
-3. **Slug Generation Strategy**: Uses nanoid for generating unique, collision-resistant slugs.
-4. **Visit Count Tracking**: Atomic updates to the visit count to prevent race conditions.
-5. **Structured Logging**: JSON-based logging for better diagnostics in distributed environments.
+- `POST /api/shorten`: Create shortened URL
+- `GET /api/r/{shortSlug}`: Redirect to original URL
+- `GET /api/urls`: List all shortened URLs
 
-## Getting Started
+## Setup & Deployment
 
-### Prerequisites
-
-- Node.js 18+
-- npm or yarn
-- Supabase account (or any PostgreSQL database)
-
-### Installation
-
-1. Clone the repository
+### Local Development
 
 ```bash
-git clone https://github.com/yourusername/url-shortener.git
-cd url-shortener
-```
-
-2. Install dependencies
-
-```bash
+# Install dependencies
 npm install
 cd frontend && npm install
 cd ../backend && npm install
-```
 
-3. Set up environment variables
+# Set up environment variables (see below)
 
-Create a `.env` file in the backend directory:
-
-```
-DATABASE_URL="postgresql://postgres:password@db.supabase.co:5432/postgres"
-APP_DOMAIN="http://localhost:3000"
-PORT=3001
-API_PREFIX="api"
-NODE_ENV="development"
-```
-
-Create a `.env.local` file in the frontend directory:
-
-```
-NEXT_PUBLIC_API_URL=http://localhost:3001
-```
-
-4. Set up the database
-
-```bash
+# Set up database
 cd backend
 npx prisma generate
-npx prisma migrate dev --name init
+npx prisma migrate dev
+
+# Run development server
+frontend: npm run dev
+backend: npm run start:dev
 ```
 
-### Running the Application
+Required environment variables:
+- Backend (.env): DATABASE_URL, APP_DOMAIN
+- Frontend (.env.local): NEXT_PUBLIC_API_URL
 
-#### Option 1: Node.js
+### Vercel Deployment
 
-From the root directory:
+1. **Frontend**:
+   - Import GitHub repository
+   - Set root directory to `frontend`
+   - Configure NEXT_PUBLIC_API_URL env variable
 
-```bash
-# Development mode
-npm run dev
-
-# Or individually
-npm run dev:frontend
-npm run dev:backend
-```
-
-The frontend will be available at http://localhost:3000
-The backend will be available at http://localhost:3001
-
-#### Option 2: Docker (Recommended for Development)
-
-This project includes Docker configuration for a consistent development environment.
-
-1. Install Docker and Docker Compose on your machine.
-
-2. Run the application using Docker Compose:
-
-```bash
-docker-compose up
-```
-
-This will start:
-- PostgreSQL database on port 5432
-- NestJS backend on port 3001
-- Next.js frontend on port 3000
-
-The Docker setup automatically:
-- Creates the PostgreSQL database
-- Runs Prisma migrations to set up database tables
-- Starts the backend and frontend services
-- Enables hot reloading for development
-
-If you need to rebuild the containers:
-
-```bash
-docker-compose up --build
-```
-
-To stop the containers:
-
-```bash
-docker-compose down
-```
-
-To stop the containers and remove volumes (will delete database data):
-
-```bash
-docker-compose down -v
-```
-
-## Deployment to Vercel
-
-### Frontend Deployment
-
-1. Push your code to a GitHub repository
-2. Create a new project in Vercel and import the repository
-3. Set the root directory to `frontend`
-4. Add the environment variable `NEXT_PUBLIC_API_URL` to point to your deployed backend
-
-### Backend Deployment
-
-1. Create a new project in Vercel and import the same repository
-2. Set the root directory to `backend`
-3. Set the following environment variables:
-   - `DATABASE_URL`: Your Supabase PostgreSQL connection string
-   - `APP_DOMAIN`: Your frontend domain (e.g., https://your-app.vercel.app)
-   - `NODE_ENV`: Set to "production"
+2. **Backend**:
+   - Import same repository
+   - Set root directory to `backend`
+   - Configure DATABASE_URL and APP_DOMAIN env variables
+   - Ensure serverless function configuration in vercel.json
 
 ## Future Enhancements
 
-- Redis-based caching for improved read performance
-- Rate limiting to prevent API abuse
-- Enhanced analytics for URL visits
-- Custom slug creation
-- User authentication for personalized URL management 
+- **Distributed Caching**: Redis implementation for improved read performance
+- **Rate Limiting**: Using @nestjs/throttler to prevent API abuse
+- **Enhanced Analytics**: More detailed statistics for URL visits
+- **Custom Slugs**: Allow users to define their own short URLs
+- **Authentication**: User accounts for URL management 
