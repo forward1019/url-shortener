@@ -16,6 +16,12 @@ export type UserData = {
 let supabase: SupabaseClient | null = null;
 
 export const getSupabase = (): SupabaseClient => {
+  // Don't attempt to create a client during build/SSR if credentials are missing
+  if (typeof window === 'undefined' && (!supabaseUrl || !supabaseAnonKey)) {
+    // Return mock client for SSR/build
+    return createClient('https://placeholder-url.supabase.co', 'placeholder-key');
+  }
+  
   if (supabase === null) {
     supabase = createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
@@ -29,6 +35,11 @@ export const getSupabase = (): SupabaseClient => {
 
 // Hook to get the current user
 export const getCurrentUser = async (): Promise<UserData | null> => {
+  // Skip in server environment during build/SSR if no credentials
+  if (typeof window === 'undefined' && (!supabaseUrl || !supabaseAnonKey)) {
+    return null;
+  }
+  
   const supabase = getSupabase();
   try {
     const { data: { user } } = await supabase.auth.getUser();
