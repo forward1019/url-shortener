@@ -1,0 +1,25 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install dependencies with legacy-peer-deps to resolve conflicts
+RUN npm install --legacy-peer-deps
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Copy source code
+COPY . .
+
+# Make the entrypoint script executable
+RUN chmod +x docker-entrypoint.sh
+
+# Expose port
+EXPOSE 3001
+
+# Run the application in development mode
+CMD ["sh", "./docker-entrypoint.sh"] 

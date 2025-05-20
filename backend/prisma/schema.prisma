@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id
+  email     String?  @unique
+  name      String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  links     Link[]
+}
+
+model Link {
+  id           Int      @id @default(autoincrement())
+  originalUrl  String
+  shortSlug    String   @unique @db.VarChar(15)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  visitCount   Int      @default(0)
+  userId       String?
+  originDomain String
+  user         User?    @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+  @@index([originDomain])
+  @@index([visitCount])
+}
