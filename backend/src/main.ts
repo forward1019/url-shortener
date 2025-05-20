@@ -14,7 +14,8 @@ async function bootstrap() {
 
   // Get config service for environment variables
   const configService = app.get(ConfigService);
-  const port = configService.get('port');
+  const port = configService.get('port') || 3000;
+  const appDomain = configService.get('app.domain') || '*';
 
   // Set up logging
   app.useLogger(app.get(Logger));
@@ -35,9 +36,9 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',  // Frontend development
-      configService.get('app.domain'), // Production frontend
+      appDomain, // Production frontend
     ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     credentials: true,
   });
 
@@ -51,4 +52,5 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
-bootstrap();
+// Export for serverless use
+export default bootstrap();
