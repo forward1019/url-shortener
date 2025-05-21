@@ -2,12 +2,15 @@
 
 A full-stack URL shortener application built with Next.js, NestJS, and Supabase, designed with scalability in mind.
 
+![URL Shortener Homepage](assets/images/homepage-screenshot.png)
+*Homepage of the URL Shortener application with URL input field and list of shortened URLs*
+
 ## Technology Stack
 
 - **Frontend**: TypeScript, Next.js, shadcn UI components with Tailwind CSS
 - **Backend**: TypeScript, NestJS, Node.js
 - **Database**: Supabase (PostgreSQL) with Prisma ORM
-- **Deployment**: Vercel (Frontend and Backend as serverless functions)
+- **Deployment**: Vercel (Frontend) and Render (Backend)
 
 ## Core Features
 
@@ -76,21 +79,30 @@ Required environment variables:
 - Backend (.env): DATABASE_URL, APP_DOMAIN
 - Frontend (.env.local): NEXT_PUBLIC_API_URL
 
-### Vercel Deployment
+### Deployment
 
-1. **Frontend**:
-   - Import GitHub repository
-   - Set root directory to `frontend`
-   - Configure NEXT_PUBLIC_API_URL env variable
+#### Frontend (Vercel)
+1. Import GitHub repository in Vercel
+2. Set root directory to `frontend`
+3. Configure environment variables:
+   - `NEXT_PUBLIC_API_URL`: URL of your deployed backend
 
-2. **Backend**:
-   - Import same repository
-   - Set root directory to `backend`
-   - Configure DATABASE_URL and APP_DOMAIN env variables
-   - Ensure serverless function configuration in vercel.json
+#### Backend (Render)
+1. Import GitHub repository in Render
+2. Create a new Web Service (not serverless function)
+3. Configure the service:
+   - **Build Command**: `npm ci && npm run build`
+   - **Start Command**: `npm run start:prod`
+4. Set environment variables:
+   - `DATABASE_URL`: Supabase connection string with connection pooling
+   - `APP_DOMAIN`: Your frontend domain
+   - `PORT`: 10000 (automatically set by Render)
+   - `NODE_ENV`: production
 
 ## Future Enhancements
 
 - **Distributed Caching**: Redis implementation for improved read performance
 - **Rate Limiting**: Using @nestjs/throttler to prevent API abuse
 - **Enhanced Analytics**: More detailed statistics for URL visits
+- **Custom Slugs**: Allow users to define their own short URLs
+- **Authentication**: User accounts for URL management
