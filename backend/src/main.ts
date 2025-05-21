@@ -39,6 +39,7 @@ async function bootstrap() {
       appDomain, // Production frontend
       'https://url-shortener-frontend-qfg9uawoi-milos-projects-0ac03486.vercel.app', // Specific frontend URL
       /\.vercel\.app$/, // Allow all vercel.app subdomains
+      /\.onrender\.com$/, // Allow all Render domains
       '*', // Allow all origins as fallback
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],

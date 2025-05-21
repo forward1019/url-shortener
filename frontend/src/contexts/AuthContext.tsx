@@ -1,8 +1,13 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { Session, User } from '@supabase/supabase-js';
-import { getSupabase, UserData } from '@/lib/supabase';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
+import { getSupabase, UserData } from "@/lib/supabase";
 
 type AuthContextType = {
   user: UserData | null;
@@ -38,26 +43,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(true);
 
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
         if (session) {
           setToken(session.access_token);
-          const { data: { user } } = await supabase.auth.getUser();
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
 
           if (user) {
             setUser({
               id: user.id,
               email: user.email,
-              name: user.user_metadata?.name || user.email?.split('@')[0],
+              name: user.user_metadata?.name || user.email?.split("@")[0],
               avatar_url: user.user_metadata?.avatar_url,
             });
           }
         } else {
-         setToken(null);
+          setToken(null);
         }
       } catch (error) {
-        console.error('Error checking session:', error);
-         setToken(null);
+        console.error("Error checking session:", error);
+        setToken(null);
       } finally {
         setIsLoading(false);
       }
@@ -66,23 +75,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     checkSession();
 
     // Subscribe to auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          setToken(session.access_token);
-          setUser({
-            id: session.user.id,
-            email: session.user.email,
-            name: session.user.user_metadata?.name || session.user.email?.split('@')[0],
-            avatar_url: session.user.user_metadata?.avatar_url,
-          });
-        } else {
-          setUser(null);
-          setToken(null);
-        }
-        setIsLoading(false);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        setToken(session.access_token);
+        setUser({
+          id: session.user.id,
+          email: session.user.email,
+          name:
+            session.user.user_metadata?.name ||
+            session.user.email?.split("@")[0],
+          avatar_url: session.user.user_metadata?.avatar_url,
+        });
+      } else {
+        setUser(null);
+        setToken(null);
       }
-    );
+      setIsLoading(false);
+    });
 
     // Cleanup subscription on unmount
     return () => {
@@ -94,9 +105,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signInWithGoogle = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
+          // Make sure cookies work across domains if needed
+          scopes: "email profile",
         },
       });
 
@@ -104,7 +117,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw error;
       }
     } catch (error) {
-      console.error('Error signing in with Google:', error);
+      console.error("Error signing in with Google:", error);
     }
   };
 
@@ -119,7 +132,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       setUser(null);
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error("Error signing out:", error);
     }
   };
 
