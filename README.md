@@ -3,7 +3,6 @@
 A full-stack URL shortener application built with Next.js, NestJS, and Supabase, designed with scalability in mind.
 
 ![URL Shortener Homepage](assets/images/homepage-screenshot.png)
-*Homepage of the URL Shortener application with URL input field and list of shortened URLs*
 
 ## Technology Stack
 
@@ -76,8 +75,19 @@ backend: npm run start:dev
 ```
 
 Required environment variables:
-- Backend (.env): DATABASE_URL, APP_DOMAIN
-- Frontend (.env.local): NEXT_PUBLIC_API_URL
+- Backend: 
+  - `DATABASE_URL`: PostgreSQL connection string for Supabase
+  - `APP_DOMAIN`: Domain for your frontend application (e.g., https://your-app.com)
+  - `PORT`: (Optional) Port for the backend server (defaults to 3001)
+  - `API_PREFIX`: (Optional) Prefix for API routes (defaults to 'api')
+  - `NODE_ENV`: Environment ('development', 'production', or 'test')
+  - `SUPABASE_URL`: Supabase project URL
+  - `SUPABASE_ANON_KEY`: Supabase anonymous API key
+
+- Frontend:
+  - `NEXT_PUBLIC_API_URL`: URL of your backend API
+  - `NEXT_PUBLIC_SUPABASE_URL`: Supabase project URL
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase anonymous API key
 
 ### Deployment
 
