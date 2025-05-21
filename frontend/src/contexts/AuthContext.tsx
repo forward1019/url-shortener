@@ -104,20 +104,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Sign in with Google
   const signInWithGoogle = async () => {
     try {
+      // Determine the correct callback URL based on environment
+      const callbackUrl = `${window.location.origin}/auth/callback`;
+
+      console.log(`Auth: Using callback URL: ${callbackUrl}`);
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          // Make sure cookies work across domains if needed
+          redirectTo: callbackUrl,
           scopes: "email profile",
+          // Set to true to skip auto redirect to provider's URL
+          skipBrowserRedirect: false,
         },
       });
 
       if (error) {
+        console.error("Supabase OAuth error:", error.message);
         throw error;
       }
     } catch (error) {
       console.error("Error signing in with Google:", error);
+      // You could add UI error handling here
     }
   };
 
