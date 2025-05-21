@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: url-shortener-backend
+    env: node
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    autoDeploy: true 

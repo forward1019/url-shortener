@@ -5,6 +5,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { DatabaseModule } from './common/database/database.module';
 import { AllExceptionsFilter } from './common/exceptions/http-exception.filter';
 import { ErrorLoggerMiddleware } from './common/middleware/error-logger.middleware';
+import { HealthModule } from './common/health/health.module';
 import { LinksModule } from './modules/links/links.module';
 import { AuthModule } from './modules/auth/auth.module';
 import configuration from './common/config/configuration';
@@ -32,6 +33,9 @@ import { validate } from './common/config/env.validation';
 
     // Database
     DatabaseModule,
+
+    // Health checks
+    HealthModule,
 
     // Feature modules
     AuthModule,
