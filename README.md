@@ -74,6 +74,50 @@ frontend: npm run dev
 backend: npm run start:dev
 ```
 
+### Docker Setup
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd url-shortener
+
+# Build and start the containers
+docker-compose up -d
+
+# The application will be available at:
+# - Frontend: http://localhost:3000
+# - Backend: http://localhost:3001
+# - PostgreSQL: localhost:5432
+
+# To stop the containers
+docker-compose down
+```
+
+This Docker setup includes:
+- PostgreSQL database
+- NestJS backend
+- Next.js frontend 
+
+The Docker configuration automatically creates the PostgreSQL database and connects all services together. You don't need Supabase credentials when running with Docker as it uses the local PostgreSQL instance instead.
+
+To rebuild containers after making changes:
+```bash
+docker-compose up -d --build
+```
+
+#### Troubleshooting Docker Setup
+
+If you encounter issues:
+
+- **View logs**: `docker-compose logs -f` (all services) or `docker-compose logs -f frontend` (specific service)
+- **Container status**: `docker-compose ps`
+- **Restart a service**: `docker-compose restart frontend`
+- **Access container shell**: `docker exec -it url-shortener-frontend sh`
+
+Common issues:
+- Frontend dependency issues can be resolved by rebuilding with the latest dependencies: `docker-compose up -d --build frontend`
+- Database connection issues usually indicate that the PostgreSQL container hasn't fully started before the backend attempts to connect. Try `docker-compose restart backend` after PostgreSQL is healthy.
+
 Required environment variables:
 - Backend: 
   - `DATABASE_URL`: PostgreSQL connection string for Supabase
